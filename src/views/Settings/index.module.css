@@ -1,0 +1,68 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+  }
+  .cates {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
+  .cate {
+    background-color: #f3f5fe;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .item {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    margin-top: 10px;
+    display: flex;
+    cursor: pointer;
+  }
+  .right {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .remark {
+    font-size: 15px;
+  }
+  .label {
+    color: #000;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .left {
+    width: 500px;
+    position: relative;
+  }
+  .value {
+    color: #000;
+    font-size: 15px;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px 0px;
+  }
+  .rowLabel {
+    color: #000;
+    font-size: 14px;
+  }
+  .rowValue {
+    color: #444;
+    font-size: 12px;
+  }
