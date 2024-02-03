@@ -1,12 +1,22 @@
-// views/Homepage.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import styles from './index.module.css';
 
-const Homepage = () => (
-  <div>
-    <h2>Welcome to the settings</h2>
-    <p>This is the content of yoursettings.</p>
-    {/* Add more content as needed */}
-  </div>
-);
+function Setting() {
+  const [isPinkBackground, setIsPinkBackground] = useState(false);
 
-export default Homepage;
+  const handleToggleBackground = () => {
+    setIsPinkBackground(!isPinkBackground);
+  };
+
+  return (
+    <div className={`${styles.settingContainer} ${isPinkBackground ? styles.pinkBackground : ''}`}>
+      <h2>Settings</h2>
+      <p>Toggle background color:</p>
+      <button onClick={handleToggleBackground}>
+        {isPinkBackground ? 'Set Default Background' : 'Set Pink Background'}
+      </button>
+    </div>
+  );
+}
+
+export default Setting;
