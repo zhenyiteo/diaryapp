@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import dayjs from 'dayjs';
-import { Alert, Calendar } from 'antd';
+import { Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const Cal = () => {
@@ -14,26 +16,31 @@ const Cal = () => {
     setValue(newValue);
     setSelectedValue(newValue);
 
-    // Redirect to the details page with the selected date
-    //last time code
-    //const handleItemClick = (item) => {
-    // navigate('/shipper/shipperJobHistoryDetail?JobID=' + item.JobID)
-  
-
-    const dateParam = newValue.format('YYYY-MM-DD');
-    navigate(`/calendar/details/${dateParam}`);
+    const dateParam = dayjs(newValue).format('YYYY-MM-DD');
+    navigate(`/calendar/details`, { state: { date: newValue } }); // Pass the selected date to CalendarDetails
   };
 
-
-  const onPanelChange = (newValue) => {
-    setValue(newValue);
+  // Example: Add green color to specific dates
+  const tileContent = ({ date, view }) => {
+    if (view === 'month' && date.getDate() === 15) {
+      return <div style={{ backgroundColor: 'black', borderRadius: '50%', height: '10px', width: '10px' }} />;
+    }
+    return null;
   };
 
   return (
-    <div style={{ height: ' auto', display: 'flex', flexDirection: 'column' }}>
-      <Alert message={`You selected date: ${selectedValue?.format('YYYY-MM-DD')}`} />
-      <div style={{ flex: 1, overflow: 'auto' }}>
-        <Calendar value={value} onSelect={onSelect} onPanelChange={onPanelChange } fullscreen={false} />
+    <div style={{ height: 'auto', display: 'flex', flexDirection: 'column', padding: '20px' }}>
+      <Alert message={`Today: ${selectedValue?.format('YYYY-MM-DD')}`} />
+      <div style={{ flex: 1, overflow: 'auto', width: '600px', margin: 'auto' }}>
+        <Calendar
+          value={value.toDate()}
+          onChange={onSelect}
+          tileContent={tileContent}
+          calendarType="US" // Set calendarType if needed
+          className="custom-calendar" // Add a custom class for styling
+          style={{ width: '100%', fontSize: '20px', padding: '20px' }} // Adjust styles for Calendar
+          tileClassName={({ date }) => (date.getDate() === 15 ? 'green-tile' : null)} // Add custom class to specific dates
+        />
       </div>
     </div>
   );
