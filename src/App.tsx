@@ -5,12 +5,15 @@ import Calendar from './views/Calendar';
 import Settings from './views/Settings';
 import CalendarDetails from './views/Calendar/detail';
 
+
 import { Layout, Menu } from 'antd';
 import { HomeOutlined, CalendarOutlined, SettingOutlined } from '@ant-design/icons';
+import { ThemeProvider } from './ThemeContext.jsx';
 
 const { Header, Sider, Content } = Layout;
 
 const App = () => (
+  <ThemeProvider>
   <Router>
     <Layout style={{ minHeight: '50vh' }}>
       <Header style={{ textAlign: 'center', padding: '10px 0', background: 'rgba(255, 255, 255, 0.5)' }}>
@@ -54,6 +57,7 @@ const App = () => (
       </Layout>
     </Layout>
   </Router>
+  </ThemeProvider>
 );
 
 export default App;

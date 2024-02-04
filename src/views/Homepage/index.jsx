@@ -13,6 +13,7 @@ const Homepage = () => {
   ];
 
   return (
+    <div> <h2>{`Diary Timeline`}</h2>
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       
       <div style={{ display: 'flex', justifyContent: 'flex-start',overflowY: 'auto', flex: 1, padding: '20px' }}>
@@ -26,6 +27,7 @@ const Homepage = () => {
           ))}
         </Timeline>
       </div>
+    </div>
     </div>
   );
 };
