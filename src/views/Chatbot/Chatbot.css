@@ -1,0 +1,46 @@
+/* Chatbot container */
+.chatbot-container {
+    width: 400px; /* Adjust width as needed */
+    margin: 20px auto; /* Center the chatbot */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  /* Chat messages container */
+  .chatbot-messages {
+    max-height: 300px; /* Limit the height of the message container */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+  }
+  
+  /* Individual message */
+  .message {
+    margin-bottom: 10px;
+  }
+  
+  /* User message */
+  .user-message {
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: right;
+  }
+  
+  /* Bot message */
+  .bot-message {
+    background-color: #d3e9ff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: left;
+  }
+  
+  /* Input message field */
+  .input-message {
+    width: calc(100% - 20px); /* Adjust width considering padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0 10px 10px; /* Add some bottom margin for separation */
+    box-sizing: border-box; /* Ensure padding doesn't increase element's width */
+  }

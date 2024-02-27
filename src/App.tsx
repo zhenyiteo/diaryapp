@@ -4,6 +4,8 @@ import Homepage from './views/Homepage';
 import Calendar from './views/Calendar';
 import Settings from './views/Settings';
 import CalendarDetails from './views/Calendar/detail';
+import Chatbot from './views/Chatbot';
+import { MessageOutlined } from '@ant-design/icons';
 
 
 import { Layout, Menu } from 'antd';
@@ -41,6 +43,9 @@ const App = () => (
             <Menu.Item key="3" icon={<SettingOutlined />}>
               <Link to="/settings">Settings</Link>
             </Menu.Item>
+            <Menu.Item key="4" icon={<MessageOutlined />}>
+              <Link to="/chatbot">Chatbot</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
 
@@ -51,6 +56,7 @@ const App = () => (
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/calendar/details" element={<CalendarDetails />} />
+              <Route path="/Chatbot" element={<Chatbot />} />
             </Routes>
           </Content>
         </Layout>

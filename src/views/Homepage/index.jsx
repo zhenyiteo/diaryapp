@@ -1,6 +1,7 @@
 import React from 'react';
 import { Timeline, Card } from 'antd';
 
+
 const Homepage = () => {
   // Dummy data for diary history
   const diaryHistory = [
@@ -13,21 +14,23 @@ const Homepage = () => {
   ];
 
   return (
-    <div> <h2>{`Diary Timeline`}</h2>
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      
-      <div style={{ display: 'flex', justifyContent: 'flex-start',overflowY: 'auto', flex: 1, padding: '20px' }}>
-        <Timeline mode="left" >
-          {diaryHistory.map((entry, index) => (
-            <Timeline.Item key={index} label={entry.date} >
-              <Card title={entry.date} style={{ width: 300 }}>
-                {entry.content}
-              </Card>
-            </Timeline.Item>
-          ))}
-        </Timeline>
+    <div>
+      <h2>{`Diary Timeline`}</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', overflowY: 'auto', flex: 1, padding: '20px' }}>
+          <Timeline mode="left">
+            {diaryHistory.map((entry, index) => (
+              <Timeline.Item key={index} label={entry.date}>
+                <Card title={entry.date} style={{ width: 300 }}>
+                  {entry.content}
+                </Card>
+              </Timeline.Item>
+            ))}
+          </Timeline>
+        </div>
       </div>
-    </div>
+      {/* Add the Chatbot component */}
+      
     </div>
   );
 };
