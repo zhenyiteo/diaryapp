@@ -1,0 +1,40 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f0f8ff; /* Soft blue background */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    color: #4A4E69; /* Dark grey-blue for contrast */
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.entry {
+    background-color: #ffffff; /* White background for each entry */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.entryTitle {
+    color: #22223B; /* Darker shade for titles */
+    margin-bottom: 10px;
+}
+
+.entryDate, .entryMood, .entryContent {
+    color: #4A4E69; /* Consistent color for text */
+    line-height: 1.6;
+}
+
+.entryMood {
+    font-style: italic;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
