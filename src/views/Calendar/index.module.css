@@ -1,68 +1,63 @@
-.home {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 20px;
-  }
-  .cates {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
-  }
-  .cate {
-    background-color: #f3f5fe;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-  }
-  .item {
-    background-color: #f0f0f0;
-    padding: 10px;
-    text-align: center;
-    margin-top: 10px;
-    display: flex;
-    cursor: pointer;
-  }
-  .right {
-    padding-left: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .name {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .remark {
-    font-size: 15px;
-  }
-  .label {
-    color: #000;
-    margin-top: 10px;
-    font-size: 14px;
-  }
-  .left {
-    width: 500px;
-    position: relative;
-  }
-  .value {
-    color: #000;
-    font-size: 15px;
-  }
-  .row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 10px 0px;
-  }
-  .rowLabel {
-    color: #000;
-    font-size: 14px;
-  }
-  .rowValue {
-    color: #444;
-    font-size: 12px;
-  }
+.customCalendar {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reactCalendar {
+  border: none;
+}
+
+.navigationButton {
+  color: #ffffff;
+  background-color: #007bff;
+  padding: 5px 10px;
+  margin: 2px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navigationButton:hover {
+  background-color: #0056b3;
+}
+
+.monthViewWeekdays {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.monthViewDaysDayWeekend {
+  color: #d9534f;
+}
+
+.tile {
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+
+.tile:hover {
+  background-color: #e9ecef;
+}
+
+.tileActive {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.greenTile {
+  background-color: #28a745;
+  color: white;
+}
+
+.dateIndicator {
+  background-color: #ffdfba;
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+  margin: auto;
+}

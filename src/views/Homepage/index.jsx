@@ -5,11 +5,11 @@ import { Timeline, Card } from 'antd';
 const Homepage = () => {
   // Dummy data for diary history
   const diaryHistory = [
-    { date: '2022-01-01', content: 'As the day unfolded, Carmen met up with her closest friends for a picnic in the park' },
-    { date: '2022-01-05', content: 'carmennnnnnnnnnnnnnnnnnn' },
-    { date: '2022-01-05', content: 'not carmen' },
+    { date: '2022-01-01', content: 'content 1' },
+    { date: '2022-01-05', content: 'content 2' },
+    { date: '2022-01-05', content: 'content 3' },
     { date: '2022-01-05', content: 'ok' },
-    { date: '2022-01-05', content: 'ok carmen' },
+    { date: '2022-01-05', content: '4' },
     // Add more entries as needed
   ];
 
