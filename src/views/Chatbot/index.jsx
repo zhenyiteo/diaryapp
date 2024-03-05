@@ -18,8 +18,8 @@ const Chatbot = () => {
   const config = {
     region: 'us-east-1',
     credentials: {
-      accessKeyId: 'abc',
-      secretAccessKey: 'abc'
+      accessKeyId: 'sensitive',
+      secretAccessKey: 'xx'
     }
   };
 
@@ -86,9 +86,9 @@ return (
     <div className="chatbot-messages">
       {messages.length === 0 ? (
         // Display a welcome message if there are no messages yet
-        <div className="welcome-message">
-          How can I help you today? Keywords eg: write, entry for diary entry
-        </div>
+        <div className="welcome-message" style={{ fontFamily: "'Roboto', sans-serif", fontSize: "18px", color: "#333", textAlign: "center", margin: "20px 0" }}>
+  How can I help you today?
+</div>
       ) : (
         // Once messages exist, display them instead of the welcome message
         messages.map((message, index) => (
