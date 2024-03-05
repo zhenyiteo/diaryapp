@@ -18,8 +18,8 @@ const Chatbot = () => {
   const config = {
     region: 'us-east-1',
     credentials: {
-      accessKeyId: 'XX',
-      secretAccessKey: 'XX'
+      accessKeyId: 'abc',
+      secretAccessKey: 'abc'
     }
   };
 
@@ -84,21 +84,31 @@ const handleUserInput = (inputMessage) => {
 return (
   <div className="chatbot-container">
     <div className="chatbot-messages">
-      {messages.map((message, index) => (
-        <div key={index} className={`message ${message.sender}`}>
-          {message.sender === 'user' ? (
-            <div className="user-message">
-              <strong>You:</strong> {message.text}
-            </div>
-          ) : (
-            <div className="bot-message">
-              <strong>Bot:</strong> {message.text}
-            </div>
-          )}
+      {messages.length === 0 ? (
+        // Display a welcome message if there are no messages yet
+        <div className="welcome-message">
+          How can I help you today? Keywords eg: write, entry for diary entry
         </div>
-      ))}
+      ) : (
+        // Once messages exist, display them instead of the welcome message
+        messages.map((message, index) => (
+          <div key={index} className={`message ${message.sender}`}>
+            {message.sender === 'user' ? (
+              <div className="user-message">
+                <strong>You:</strong> {message.text}
+              </div>
+            ) : (
+              <div className="bot-message">
+                <strong>Bot:</strong> {message.text}
+              </div>
+            )}
+          </div>
+        ))
+      )}
       <div ref={messagesEndRef} />
     </div>
+
+
     <input
       type="text"
       className="input-message"

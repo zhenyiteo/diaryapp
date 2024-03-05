@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom'; // For accessing router state
 import { Spin, Alert } from 'antd'; // For loading spinner and alerts
+import './CalendarDetails.css';
 
 const CalendarDetails = () => {
   const location = useLocation(); // Access location to get state passed from the calendar
@@ -33,19 +34,21 @@ const CalendarDetails = () => {
   }, [location.state?.date]);
 
   return (
-    <div>
-      <h2>Diary Entries for {location.state?.date}</h2>
+    <div className="container">
+      <h2 className="header">Diary Entries for {location.state?.date}</h2>
       {isLoading ? (
         <Spin tip="Loading diary entries..." />
       ) : error ? (
-        <Alert message={error} type="error" showIcon />
+        <div className="alert">
+          <Alert message={error} type="error" showIcon />
+        </div>
       ) : entries.length > 0 ? (
         entries.map((entry, index) => (
-          <div key={index} style={{ marginBottom: '20px' }}>
-            <h3>{entry.title}</h3>
-            <p>Date: {entry.date}</p>
-            <p>Mood: {entry.mood}</p>
-            <p>{entry.content}</p>
+          <div key={index} className="entry">
+            <h3 className="entryTitle">{entry.title}</h3>
+            <p className="entryDate">Date: {entry.date}</p>
+            <p className="entryMood">Mood: {entry.mood}</p>
+            <p className="entryContent">{entry.content}</p>
           </div>
         ))
       ) : (
