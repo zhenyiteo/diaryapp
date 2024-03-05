@@ -1,45 +1,55 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import styles from './index.module.css'; // Adjusted import here
 import dayjs from 'dayjs';
 import { Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const Cal = () => {
-  const currentDate = dayjs(); // Get the current date
-  const navigate = useNavigate(); // Hook for programmatic navigation
+function useSingleAndDoubleClick(actionSimpleClick, actionDoubleClick, delay = 250) {
+  let clickTimer = null;
 
-  const [value, setValue] = useState(currentDate);
-  const [selectedValue, setSelectedValue] = useState(currentDate);
-
-  const onSelect = (newValue) => {
-    setValue(newValue);
-    setSelectedValue(newValue);
-
-    const dateParam = dayjs(newValue).format('YYYY-MM-DD');
-    navigate(`/calendar/details`, { state: { date: newValue } }); // Pass the selected date to CalendarDetails
-  };
-
-  // Example: Add green color to specific dates
-  const tileContent = ({ date, view }) => {
-    if (view === 'month' && date.getDate() === 15) {
-      return <div style={{ backgroundColor: 'black', borderRadius: '50%', height: '10px', width: '10px' }} />;
+  return (date) => {
+    if (clickTimer === null) {
+      clickTimer = setTimeout(() => {
+        actionSimpleClick(date);
+        clickTimer = null;
+      }, delay);
+    } else {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+      actionDoubleClick(date);
     }
-    return null;
   };
+}
+
+const Cal = () => {
+  const currentDate = dayjs();
+  const navigate = useNavigate();
+  const [value, setValue] = useState(new Date());
+  const [alertMessage, setAlertMessage] = useState(`Today: ${currentDate.format('YYYY-MM-DD')}`);
+
+  const handleSingleClick = (newValue) => {
+    setValue(newValue);
+    setAlertMessage(`Selected date: ${dayjs(newValue).format('YYYY-MM-DD')}`);
+  };
+
+  const handleDoubleClick = (newValue) => {
+    navigate(`/calendar/details`, { state: { date: dayjs(newValue).format('YYYY-MM-DD') } });
+  };
+
+  const handleDateClick = useSingleAndDoubleClick(handleSingleClick, handleDoubleClick);
 
   return (
     <div style={{ height: 'auto', display: 'flex', flexDirection: 'column', padding: '20px' }}>
-      <Alert message={`Today: ${selectedValue?.format('YYYY-MM-DD')}`} />
+      <h2>Search your Diary</h2>
+      <Alert message={alertMessage} />
       <div style={{ flex: 1, overflow: 'auto', width: '600px', margin: 'auto' }}>
         <Calendar
-          value={value.toDate()}
-          onChange={onSelect}
-          tileContent={tileContent}
-          calendarType="US" // Set calendarType if needed
-          className="custom-calendar" // Add a custom class for styling
-          style={{ width: '100%', fontSize: '20px', padding: '20px' }} // Adjust styles for Calendar
-          tileClassName={({ date }) => (date.getDate() === 15 ? 'green-tile' : null)} // Add custom class to specific dates
+          value={value}
+          onClickDay={handleDateClick}
+          calendarType="US"
+          className={styles.customCalendar} // Adjusted to use CSS Modules
         />
       </div>
     </div>
