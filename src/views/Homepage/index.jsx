@@ -3,6 +3,7 @@ import { Timeline, Card, Modal } from 'antd';
 import axios from 'axios';
 import styled, { css } from 'styled-components';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
+import './index.module.css';
 
 const TimelineWrapper = styled.div`
   display: flex;
@@ -65,6 +66,13 @@ const getMonthAbbreviation = (month) => {
   return months[parseInt(month, 10) - 1];
 };
 
+const getDayOfWeek = (date) => {
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dateObj = new Date(date);
+  return dayNames[dateObj.getDay()];
+};
+
+
 const MoodIcon = ({ mood }) => {
   switch (mood.toLowerCase()) {
     case 'happy':
@@ -109,13 +117,13 @@ const Homepage = () => {
   };
 
   return (
-    <div>
+    <div style={{ margin: '0 auto', maxWidth: 1000 }}>
       <h2>Diary Timeline</h2>
       <TimelineWrapper>
         <ContentWrapper>
           <Timeline mode="left">
             {diaryHistory.map((entry, index) => (
-              <Timeline.Item key={index} label={entry.date}>
+              <Timeline.Item key={index} label={`${getDayOfWeek(entry.date)}, ${entry.date}`}>
                 <StyledCard
                   hoverable
                   onClick={() => showModal(entry)}

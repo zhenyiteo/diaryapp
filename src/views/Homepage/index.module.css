@@ -67,4 +67,16 @@
     font-size: 12px;
   }
 
+  .sticky-header {
+    position: sticky;
+    top: 0; /* Adjust if you have a top navbar and need to give some space */
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%); /* Centers the element */
+    width: calc(100% - 200px); /* Assuming 200px is the width of your sidebar */
+    background: white; /* Use the background color of your app */
+    z-index: 10; /* To ensure it stays above other content */
+    padding: 10px 0; /* Optional padding */
+  }
+
   
