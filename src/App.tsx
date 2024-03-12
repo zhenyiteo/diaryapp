@@ -5,12 +5,15 @@ import Calendar from './views/Calendar';
 import Settings from './views/Settings';
 import CalendarDetails from './views/Calendar/detail';
 import Chatbot from './views/Chatbot';
-import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined } from '@ant-design/icons';
-
+import SentimentAnalysis from './views/SentimentAnalysis';
+import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined, BarChartOutlined } from '@ant-design/icons';
+import './App.css';
 import { Layout, Menu, Tooltip } from 'antd';
 import { ThemeProvider } from './ThemeContext.jsx';
 
 const { Header, Sider, Content } = Layout;
+
+
 
 const App = () => {
   // State to control the collapsed status of the Sider
@@ -56,17 +59,25 @@ const App = () => {
                     <Link to="/chatbot">Chatbot</Link>
                   </Tooltip>
                 </Menu.Item>
+                {/* New Sentiment Analysis menu item */}
+                <Menu.Item key="5" icon={<BarChartOutlined />}>
+                <Tooltip placement="right" title={collapsed ? "Sentiment Analysis" : ""}>
+                <Link to="/sentiment-analysis">Sentiment Analysis</Link>
+                </Tooltip>
+                </Menu.Item>
               </Menu>
             </Sider>
 
             <Layout>
-              <Content style={{ padding: '24px' }}>
+            <Content className="site-content">
                 <Routes>
                   <Route path="/home" element={<Homepage />} />
                   <Route path="/calendar" element={<Calendar />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/calendar/details" element={<CalendarDetails />} />
                   <Route path="/chatbot" element={<Chatbot />} />
+                  {/* Add the new route for sentiment analysis view */}
+                  <Route path="/sentiment-analysis" element={<SentimentAnalysis />} />
                 </Routes>
               </Content>
             </Layout>

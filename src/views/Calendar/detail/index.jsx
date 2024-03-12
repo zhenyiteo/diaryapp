@@ -1,59 +1,140 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'; // For accessing router state
-import { Spin, Alert } from 'antd'; // For loading spinner and alerts
-import './CalendarDetails.css';
+import { useLocation } from 'react-router-dom';
+import { Spin, Alert, Button, Card, Typography, Modal, Form, Input } from 'antd';
+
+const { Title, Paragraph } = Typography;
 
 const CalendarDetails = () => {
-  const location = useLocation(); // Access location to get state passed from the calendar
+  const location = useLocation();
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [form] = Form.useForm();
 
-  // Function to fetch diary entries based on a given date
+  useEffect(() => {
+    const date = location.state?.date;
+    if (date) {
+      fetchDiaryEntries(date);
+    }
+  }, [location.state?.date]);
+
   const fetchDiaryEntries = async (date) => {
     setIsLoading(true);
     setError('');
     try {
       const response = await axios.get(`https://puvce27hej.execute-api.us-east-1.amazonaws.com/prod/resource?date=${date}`);
-      setEntries(response.data); // Assuming the API returns an array of entries
+      setEntries(response.data);
     } catch (err) {
-      console.error("Error fetching diary entries:", err);
       setError('Failed to fetch diary entries. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // useEffect to fetch diary entries when the component mounts or the date changes
-  useEffect(() => {
-    const date = location.state?.date; // Extract the date passed via router state
-    if (date) {
-      fetchDiaryEntries(date);
+  const handleEdit = (entry) => {
+    setSelectedEntry(entry);
+    form.setFieldsValue({
+      title: entry.title,
+      content: entry.content,
+      mood: entry.mood,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleModalOk = () => {
+    form.validateFields()
+      .then(values => {
+        console.log('Form values:', values); // Log to check form values
+        const updatedEntry = {
+          ...values,
+          sessionId: selectedEntry.sessionId // Keeping original sessionId
+          // Do not include date here since you're not updating it
+        };
+        console.log('Sending updated entry:', updatedEntry); // Log to check the payload
+        updateDiaryEntry(updatedEntry);
+        setIsModalVisible(false);
+      })
+      .catch(info => {
+        console.error('Validate Failed:', info); // Log validation errors
+      });
+  };
+
+  const updateDiaryEntry = async (updatedEntry) => {
+    setIsLoading(true);
+    setError('');
+    try {
+      console.log('Attempting to update entry:', updatedEntry); // Log attempt to update
+      const response = await axios.post(
+        'https://m6ja3vhn7g.execute-api.us-east-1.amazonaws.com/prod/resource', 
+        JSON.stringify(updatedEntry), // Make sure to stringify the body
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      console.log('Update response:', response); // Log the response
+      if (response.status === 200) {
+        // Handle successful update
+      }
+    } catch (error) {
+      console.error('Error updating entry:', error); // Log any errors
+      setError('Failed to update the entry. Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
-  }, [location.state?.date]);
+  };
+
+  const renderEntries = () => entries.map((entry, index) => (
+    <Card key={index} className="entryCard">
+      <Title level={4}>{entry.title}</Title>
+      <Paragraph><strong>Date:</strong> {entry.date}</Paragraph>
+      <Paragraph><strong>Mood:</strong> {entry.mood}</Paragraph>
+      <Paragraph>{entry.content}</Paragraph>
+      <Button type="primary" onClick={() => handleEdit(entry)}>Edit</Button>
+    </Card>
+  ));
 
   return (
     <div className="container">
-      <h2 className="header">Diary Entries for {location.state?.date}</h2>
+      <Title level={2}>Diary Entries for {location.state?.date}</Title>
       {isLoading ? (
         <Spin tip="Loading diary entries..." />
       ) : error ? (
-        <div className="alert">
-          <Alert message={error} type="error" showIcon />
-        </div>
-      ) : entries.length > 0 ? (
-        entries.map((entry, index) => (
-          <div key={index} className="entry">
-            <h3 className="entryTitle">{entry.title}</h3>
-            <p className="entryDate">Date: {entry.date}</p>
-            <p className="entryMood">Mood: {entry.mood}</p>
-            <p className="entryContent">{entry.content}</p>
-          </div>
-        ))
+        <Alert message={error} type="error" showIcon />
       ) : (
-        <p>No entries found for this date.</p>
+        renderEntries()
       )}
+      <Modal
+        title="Edit Diary Entry"
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={() => setIsModalVisible(false)}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: 'Please input the title!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="content"
+            label="Content"
+            rules={[{ required: true, message: 'Please input the content!' }]}
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="mood"
+            label="Mood"
+            rules={[{ required: true, message: 'Please input the mood!' }]}
+          >
+            <Input />
+          </Form.Item>
+          {/* Date Form.Item has been removed to prevent editing */}
+        </Form>
+      </Modal>
     </div>
   );
 };
