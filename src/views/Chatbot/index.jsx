@@ -18,8 +18,8 @@ const Chatbot = () => {
   const config = {
     region: 'us-east-1',
     credentials: {
-      accessKeyId: 'AKIAQSCL',
-      secretAccessKey: 'n6nOOLFus'
+      accessKeyId: 'a',
+      secretAccessKey: 'naa'
     }
   };
 
