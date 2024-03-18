@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Homepage from './views/Homepage';
 import Calendar from './views/Calendar';
-import Settings from './views/Settings';
+import Info from './views/Info';
 import CalendarDetails from './views/Calendar/detail';
 import Chatbot from './views/Chatbot';
 import SentimentAnalysis from './views/SentimentAnalysis';
-import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined, BarChartOutlined } from '@ant-design/icons';
+import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined, BarChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import './App.css';
 import { Layout, Menu, Tooltip } from 'antd';
 import { ThemeProvider } from './ThemeContext.jsx';
 
 const { Header, Sider, Content } = Layout;
-
-
 
 const App = () => {
   // State to control the collapsed status of the Sider
@@ -49,31 +47,30 @@ const App = () => {
                     <Link to="/calendar">Calendar</Link>
                   </Tooltip>
                 </Menu.Item>
-                <Menu.Item key="3" icon={<SettingOutlined />}>
-                  <Tooltip placement="right" title={collapsed ? "Settings" : ""}>
-                    <Link to="/settings">Settings</Link>
-                  </Tooltip>
-                </Menu.Item>
-                <Menu.Item key="4" icon={<MessageOutlined />}>
+                <Menu.Item key="3" icon={<MessageOutlined />}>
                   <Tooltip placement="right" title={collapsed ? "Chatbot" : ""}>
                     <Link to="/chatbot">Chatbot</Link>
                   </Tooltip>
                 </Menu.Item>
-                {/* New Sentiment Analysis menu item */}
-                <Menu.Item key="5" icon={<BarChartOutlined />}>
-                <Tooltip placement="right" title={collapsed ? "Sentiment Analysis" : ""}>
-                <Link to="/sentiment-analysis">Sentiment Analysis</Link>
-                </Tooltip>
+                <Menu.Item key="4" icon={<BarChartOutlined />}>
+                  <Tooltip placement="right" title={collapsed ? "Sentiment Analysis" : ""}>
+                    <Link to="/sentiment-analysis">Sentiment Analysis</Link>
+                  </Tooltip>
                 </Menu.Item>
+                <Menu.Item key="5" icon={<InfoCircleOutlined />}>
+                <Tooltip placement="right" title={collapsed ? "Info" : ""}>
+                  <Link to="/info">Info</Link>
+                </Tooltip>
+              </Menu.Item>
               </Menu>
             </Sider>
 
             <Layout>
-            <Content className="site-content">
+              <Content className="site-content">
                 <Routes>
                   <Route path="/home" element={<Homepage />} />
                   <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/info" element={<Info />} />
                   <Route path="/calendar/details" element={<CalendarDetails />} />
                   <Route path="/chatbot" element={<Chatbot />} />
                   {/* Add the new route for sentiment analysis view */}

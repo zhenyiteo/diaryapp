@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Table, Button, Input, message } from 'antd';
-import * as XLSX from 'xlsx';
+import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { Table, Button, Input, message, Modal } from 'antd'; // Import Modal directly from 'antd'
 import './Sentiment.css';
+import * as XLSX from 'xlsx';
+import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid } from 'recharts';
+
 
 const COLORS = ['#F78888', '#8CCB9B', '#90AFC5', '#C789F2'];
 
+const moodColorMapping = {
+  positive: '#8CCB9B',
+  neutral: '#90AFC5',
+  mixed: '#C789F2',
+  negative: '#F78888',
+};
+
 const SentimentAnalysis = () => {
   const [moodEntries, setMoodEntries] = useState([]);
-  const [moodData, setMoodData] = useState([]);
   const [moodCount, setMoodCount] = useState([]);
   const [jobId, setJobId] = useState('');
   const [userInputJobId, setUserInputJobId] = useState('');
   const [error, setError] = useState('');
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false); // State to manage visibility of confirmation modal
 
   const handleSentimentAnalysis = async () => {
+    setIsConfirmationModalVisible(true); // Display confirmation modal
+  };
+
+  const startSentimentAnalysis = async () => {
     try {
       const response = await axios.post('https://pnlwmxtxkl.execute-api.us-east-1.amazonaws.com/prod/resource');
       const { JobId } = response.data;
@@ -25,13 +38,14 @@ const SentimentAnalysis = () => {
       console.error('Error starting sentiment analysis:', error);
       setError('Error starting sentiment analysis. Please try again.'); // Set error message
     }
+    setIsConfirmationModalVisible(false); // Close confirmation modal after starting analysis
   };
 
   useEffect(() => {
     axios.get('https://bbzp4vxfog.execute-api.us-east-1.amazonaws.com/prod/resource')
       .then(response => {
         const data = JSON.parse(response.data.body);
-  
+
         let transformedEntries = data.map(item => {
           const sentimentScores = JSON.parse(item.sentimentScore);
 
@@ -41,29 +55,11 @@ const SentimentAnalysis = () => {
             mood: item.mood,
             entry: item.entry,
             sentimentScore: sentimentScores,
+            moodColor: moodColorMapping[item.mood]
           };
         });
 
         transformedEntries = transformedEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        const moodDataMapping = transformedEntries.reduce((acc, entry) => {
-          const date = entry.date;
-          if (!acc[date]) {
-            acc[date] = { date };
-            Object.keys(entry.sentimentScore).forEach(mood => {
-              acc[date][mood] = entry.sentimentScore[mood];
-            });
-          } else {
-            Object.keys(entry.sentimentScore).forEach(mood => {
-              acc[date][mood] = (acc[date][mood] || 0) + entry.sentimentScore[mood];
-            });
-          }
-          return acc;
-        }, {});
-
-        
-
-        setMoodData(Object.values(moodDataMapping));
 
         const moodCountMapping = transformedEntries.reduce((acc, entry) => {
           acc[entry.mood] = (acc[entry.mood] || 0) + 1;
@@ -84,20 +80,25 @@ const SentimentAnalysis = () => {
         console.error('There was an error fetching the mood entries:', error);
       });
   }, []);
-  
 
   const processResults = async () => {
-    const apiUrl = 'https://mtclfro3q4.execute-api.us-east-1.amazonaws.com/production/resource'; // Correct URL
-    console.log('JobId being sent:', userInputJobId); // Log the JobId being sent
-  
+    if (!userInputJobId || userInputJobId.length < 20) {
+      message.error('Wrong format Job ID');
+      return;
+    }
+
+    const apiUrl = 'https://mtclfro3q4.execute-api.us-east-1.amazonaws.com/production/resource';
+
     try {
-      const response = await axios.post(apiUrl, { JobId: userInputJobId }, {
+      const payload = { body: JSON.stringify({ JobId: userInputJobId }) };
+      const response = await axios.post(apiUrl, payload, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
       console.log('Response data:', response.data); // Log the response data
       message.success('Results processed successfully');
+      window.location.reload();
     } catch (error) {
       console.error('Error processing results:', error);
       message.error('Failed to process results. Please try again.');
@@ -114,19 +115,27 @@ const SentimentAnalysis = () => {
       });
   };
 
-
-  const exportToExcel = (apiData, fileName) => {
-    const ws = XLSX.utils.json_to_sheet(apiData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Mood Data');
-    if(!ws['!cols']) ws['!cols'] = [];
-    ws['!cols'][0] = { width: 20 };
-    const exportFileName = `${fileName}.xlsx`;
-    XLSX.writeFile(wb, exportFileName);
-  };
-
-  const handleExport = () => {
-    exportToExcel(moodEntries, 'MoodEntries');
+  const exportToExcel = () => {
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const fileName = 'mood_data';
+    const exportedData = moodEntries.map(({ key, date, mood, entry, confidenceScore, sentimentScore }) => ({
+      Key: key,
+      Date: date,
+      Mood: mood,
+      Entry: entry,
+      'Confidence Score': confidenceScore,
+      'Sentiment Score': sentimentScore
+    }));
+    const ws = XLSX.utils.json_to_sheet(exportedData);
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+    const url = URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName + fileExtension;
+    link.click();
   };
 
   const columns = [
@@ -160,48 +169,134 @@ const SentimentAnalysis = () => {
     },
   ];
 
+  const moodToNumeric = {
+    negative: 0,
+    mixed: 1,
+    neutral: 2,
+    positive: 3,
+  };
+
+  const convertDateToNumber = (dateStr) => {
+    return new Date(dateStr).getTime();
+  };
+
+  // Prepare data for the scatter plot
+  const scatterData = moodEntries.map((entry) => ({
+    ...entry,
+    date: new Date(entry.date).toLocaleDateString(), // Convert date to a string in the desired format
+    moodValue: moodToNumeric[entry.mood.toLowerCase()],
+    moodColor: moodColorMapping[entry.mood.toLowerCase()]
+  }));
+
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="custom-tooltip">
+          <p>Date: {data.date}</p>
+          <p>Mood: {data.mood.charAt(0).toUpperCase() + data.mood.slice(1)}</p>
+          <p>Confidence: {data.confidenceScore}</p>
+        </div>
+      );
+    }
+  
+    return null;
+  };
+
+  
+
+
   return (
     <div style={{ margin: '0 auto', maxWidth: 1000, padding: '20px' }}>
-  <h1 style={{ textAlign: 'center' }}>Sentiment Analysis</h1>
-  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-    <Button type="primary" onClick={handleSentimentAnalysis}>Start Sentiment Analysis</Button>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <span>Job ID:</span>
-      <Input readOnly value={jobId} style={{ width: 'auto' }} />
-      <Button onClick={copyToClipboard}>Copy</Button>
-    </div>
-    <div>
-      <Input
-        value={userInputJobId}
-        onChange={(e) => setUserInputJobId(e.target.value)}
-        placeholder="Enter Job ID"
-        style={{ width: '250px', marginRight: '10px' }}
-        maxLength={20}
-      />
-      <Button type="primary" onClick={processResults}>Process Results</Button>
-    </div>
-  </div>
-  {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-
-      <div style={{ margin: '50px 0' }}>
-        <h2>Mood Over Time</h2>
-        <LineChart width={900} height={300} data={moodData} margin={{ top: 5, right: 30, bottom: 5, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="positive" stroke="#8CCB9B" />
-          <Line type="monotone" dataKey="neutral" stroke="#90AFC5" />
-          <Line type="monotone" dataKey="negative" stroke="#F78888" />
-          <Line type="monotone" dataKey="mixed" stroke="#C789F2" />
-        </LineChart>
+      <h1 style={{ textAlign: 'center' }}>Sentiment Analysis - Amazon Comprehend</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <Button type="primary" onClick={handleSentimentAnalysis}>Start Sentiment Analysis</Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span>Job ID:</span>
+          <Input readOnly value={jobId} style={{ width: 'auto' }} />
+          <Button onClick={copyToClipboard}>Copy</Button>
+        </div>
+        <div>
+          <Input
+            value={userInputJobId}
+            onChange={(e) => setUserInputJobId(e.target.value)}
+            placeholder="Enter Job ID"
+            style={{ width: '250px', marginRight: '10px' }}
+            maxLength={50}
+          />
+          <Button type="primary" onClick={processResults}>Process Results</Button>
+        </div>
       </div>
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+
+      {/* Confirmation Modal */}
+      <Modal
+        title="Start Sentiment Analysis?"
+        visible={isConfirmationModalVisible}
+        onCancel={() => setIsConfirmationModalVisible(false)}
+        onOk={startSentimentAnalysis}
+        okText="Yes"
+        cancelText="No"
+      >
+        Do you wish to initiate sentiment analysis for the diary entry? This action will generate a job ID, which will be used to process the results. Please note that there will be an approximate waiting period of 10 minutes before sending to process the results.
+      </Modal>
+
+
       
+
+
+      
+
+    
+
+    <div style={{ margin: '50px 0' }}>
+      <h2>Mood by Date </h2>
+      <ScatterChart width={800} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+  <CartesianGrid />
+  <XAxis type="category" dataKey="date" name="Date" />
+  <YAxis
+  type="number"
+  dataKey="moodValue"
+  name="Mood"
+  domain={['auto', 'auto']} // Let recharts determine the domain automatically
+  tickFormatter={(value) => {
+    switch (value) {
+      case 0: return 'Negative';
+      case 1: return 'Mixed';
+      case 2: return 'Neutral';
+      case 3: return 'Positive';
+      default: return ''; // Handle undefined or unexpected values
+    }
+  }}
+/>
+  <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+  <Legend />
+  <Scatter name="Confidence indicates the accuracy level of Mood" data={scatterData} fill="#800080" >
+    {
+      scatterData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.moodColor} />)
+    }
+  </Scatter>
+</ScatterChart>
+    </div>
+
+
+
+
+
       <div style={{ margin: '50px 0' }}>
         <h2>Mood Distribution</h2>
         <PieChart width={400} height={400}>
-          <Pie data={moodCount} cx={200} cy={200} outerRadius={80} dataKey="value" nameKey="name">
+          <Pie
+            data={moodCount}
+            cx={200}
+            cy={200}
+            outerRadius={80}
+            dataKey="value"
+            nameKey="name"
+            animationBegin={0} // Start animation from the beginning
+            animationDuration={400} // Animation duration in milliseconds
+          >
             {moodCount.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
@@ -210,11 +305,11 @@ const SentimentAnalysis = () => {
           <Legend />
         </PieChart>
       </div>
-      
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
-        <Button onClick={exportToExcel} type="primary">Export to Excel</Button>
+
+      <div style={{ marginBottom: '20px' }}>
+        <Button type="primary" onClick={exportToExcel}>Export to Excel</Button>
       </div>
-      
+
       <Table dataSource={moodEntries} columns={columns} pagination={{ pageSize: 10 }} />
     </div>
   );

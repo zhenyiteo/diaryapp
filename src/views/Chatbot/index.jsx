@@ -19,7 +19,7 @@ const Chatbot = () => {
     region: 'us-east-1',
     credentials: {
       accessKeyId: 'a',
-      secretAccessKey: 'naa'
+      secretAccessKey: 'a'
     }
   };
 
@@ -87,7 +87,8 @@ return (
       {messages.length === 0 ? (
         // Display a welcome message if there are no messages yet
         <div className="welcome-message" style={{ fontFamily: "'Roboto', sans-serif", fontSize: "18px", color: "#333", textAlign: "center", margin: "20px 0" }}>
-  How can I help you today?
+  Hello, I am diaryapp Chatbot. Here are some questions to get you started:
+  I want to write diary.
 </div>
       ) : (
         // Once messages exist, display them instead of the welcome message
