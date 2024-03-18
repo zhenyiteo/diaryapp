@@ -84,15 +84,21 @@ const CalendarDetails = () => {
     }
   };
 
-  const renderEntries = () => entries.map((entry, index) => (
-    <Card key={index} className="entryCard">
-      <Title level={4}>{entry.title}</Title>
-      <Paragraph><strong>Date:</strong> {entry.date}</Paragraph>
-      <Paragraph><strong>Mood:</strong> {entry.mood}</Paragraph>
-      <Paragraph>{entry.content}</Paragraph>
-      <Button type="primary" onClick={() => handleEdit(entry)}>Edit</Button>
-    </Card>
-  ));
+  const renderEntries = () => {
+    if (entries.length === 0) {
+      return <Paragraph>No entries available for this date.</Paragraph>;
+    }
+  
+    return entries.map((entry, index) => (
+      <Card key={index} className="entryCard">
+        <Title level={4}>{entry.title}</Title>
+        <Paragraph><strong>Date:</strong> {entry.date}</Paragraph>
+        <Paragraph><strong>Mood:</strong> {entry.mood}</Paragraph>
+        <Paragraph>{entry.content}</Paragraph>
+        <Button type="primary" onClick={() => handleEdit(entry)}>Edit</Button>
+      </Card>
+    ));
+  };
 
   return (
     <div className="container">
