@@ -239,7 +239,7 @@ const SentimentAnalysis = () => {
         okText="Yes"
         cancelText="No"
       >
-        Do you wish to initiate sentiment analysis for the diary entry? This action will generate a job ID, which will be used to process the results. Please note that there will be an approximate waiting period of 10 minutes before sending to process the results.
+        Do you wish to initiate sentiment analysis ? This action will generate a job ID. Please wait for 10 minutes before sending the job ID to Process Results.
       </Modal>
 
 

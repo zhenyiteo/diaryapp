@@ -1,9 +1,41 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Timeline, Card, Modal } from 'antd';
+import { Timeline, Card, Modal, Button, Tooltip } from 'antd';
 import axios from 'axios';
 import styled, { css } from 'styled-components';
-import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
-import './index.module.css';
+import { SmileOutlined, FrownOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+
+const AddButton = styled(Button)`
+  position: fixed;
+  bottom: 4%;
+  right: 4%;
+  z-index: 10;
+  transition: transform 0.3s ease-in-out;
+ 
+  background-color: #000000; 
+  color: #ffffff; 
+
+  &:hover {
+    transform: scale(1.5); // Enlarge the button on hover
+    
+    .add-diary-text {
+      display: block; // Show the text when hovering
+    }
+  }
+
+  &::after {
+    content: 'Add Diary';
+    display: none; 
+    position: absolute;
+    left: 50%;
+    bottom: 110%;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #000;
+    z-index: 11;
+  }
+`;
 
 const TimelineWrapper = styled.div`
   display: flex;
@@ -27,7 +59,7 @@ const StyledCard = styled(Card)`
   transition: transform 0.2s, box-shadow 0.2s;
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   }
 `;
 
@@ -38,8 +70,8 @@ const TitleWrapper = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 20px; /* Increased font size */
-  font-weight: bold; /* Make the font bold */
+  font-size: 20px;
+  font-weight: bold;
 `;
 
 const DateWrapper = styled.div`
@@ -55,7 +87,7 @@ const DateText = styled.div`
 `;
 
 const ContentText = styled.div`
-  font-family: 'Handlee', cursive; /* Apply Handlee font */
+  font-family: 'Handlee', cursive;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -72,7 +104,6 @@ const getDayOfWeek = (date) => {
   return dayNames[dateObj.getDay()];
 };
 
-
 const MoodIcon = ({ mood }) => {
   switch (mood.toLowerCase()) {
     case 'happy':
@@ -85,6 +116,7 @@ const MoodIcon = ({ mood }) => {
 };
 
 const Homepage = () => {
+  const navigate = useNavigate();
   const [diaryHistory, setDiaryHistory] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -116,6 +148,10 @@ const Homepage = () => {
     setIsModalVisible(false);
   };
 
+  const handleAddClick = () => {
+    navigate('/calendar');
+  };
+
   return (
     <div style={{ margin: '0 auto', maxWidth: 1000 }}>
       <h2>Diary Timeline</h2>
@@ -145,6 +181,16 @@ const Homepage = () => {
             ))}
           </Timeline>
         </ContentWrapper>
+
+        <Tooltip title="Add Diary">
+          <AddButton
+            type="primary"
+            shape="circle"
+            icon={<PlusCircleOutlined />}
+            size="large"
+            onClick={handleAddClick}
+          />
+        </Tooltip>
       </TimelineWrapper>
       <Modal
         title={<span style={{ color: '#123456' }}>{selectedEntry?.title}</span>}
