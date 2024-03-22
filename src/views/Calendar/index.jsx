@@ -42,14 +42,14 @@ const Cal = () => {
 
   return (
     <div style={{ height: 'auto', display: 'flex', flexDirection: 'column', padding: '20px' }}>
-      <h2>Search your Diary</h2>
+      <h2>Choose a Date</h2>
       <Alert message={alertMessage} />
       <div style={{ flex: 1, overflow: 'auto', width: '600px', margin: 'auto' }}>
         <Calendar
           value={value}
           onClickDay={handleDateClick}
           calendarType="US"
-          className={styles.customCalendar} // Adjusted to use CSS Modules
+          className={styles.customCalendar} 
         />
       </div>
     </div>

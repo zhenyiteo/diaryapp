@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { Spin, Alert, Button, Card, Typography, Modal, Form, Input } from 'antd';
+import { notification } from 'antd';
 
 const { Title, Paragraph } = Typography;
 
@@ -10,10 +11,12 @@ const CalendarDetails = () => {
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isAddEntryModalVisible, setIsAddEntryModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [form] = Form.useForm();
-
+  
+  // Fetch diary entries when date changes
   useEffect(() => {
     const date = location.state?.date;
     if (date) {
@@ -21,6 +24,7 @@ const CalendarDetails = () => {
     }
   }, [location.state?.date]);
 
+  // Fetch entries from API
   const fetchDiaryEntries = async (date) => {
     setIsLoading(true);
     setError('');
@@ -34,59 +38,126 @@ const CalendarDetails = () => {
     }
   };
 
+  // Open edit modal
   const handleEdit = (entry) => {
     setSelectedEntry(entry);
-    form.setFieldsValue({
-      title: entry.title,
-      content: entry.content,
-      mood: entry.mood,
-    });
-    setIsModalVisible(true);
+    form.setFieldsValue(entry);
+    setIsEditModalVisible(true);
   };
 
-  const handleModalOk = () => {
-    form.validateFields()
-      .then(values => {
-        console.log('Form values:', values); // Log to check form values
-        const updatedEntry = {
-          ...values,
-          sessionId: selectedEntry.sessionId // Keeping original sessionId
-          // Do not include date here since you're not updating it
-        };
-        console.log('Sending updated entry:', updatedEntry); // Log to check the payload
-        updateDiaryEntry(updatedEntry);
-        setIsModalVisible(false);
-      })
-      .catch(info => {
-        console.error('Validate Failed:', info); // Log validation errors
+  // Submit updated entry
+  const handleEditModalOk = () => {
+    form.validateFields().then(values => {
+      updateDiaryEntry({
+        ...values,
+        sessionId: selectedEntry.sessionId
       });
+      setIsEditModalVisible(false);
+    }).catch(info => {
+      console.error('Validate Failed:', info);
+    });
   };
 
+  // Update entry in API
   const updateDiaryEntry = async (updatedEntry) => {
     setIsLoading(true);
     setError('');
     try {
-      console.log('Attempting to update entry:', updatedEntry); // Log attempt to update
-      const response = await axios.post(
+      const response = await axios.put(
         'https://m6ja3vhn7g.execute-api.us-east-1.amazonaws.com/prod/resource', 
-        JSON.stringify(updatedEntry), // Make sure to stringify the body
+        JSON.stringify(updatedEntry),
         { headers: { 'Content-Type': 'application/json' } }
       );
-      console.log('Update response:', response); // Log the response
       if (response.status === 200) {
-        // Handle successful update
+        fetchDiaryEntries(updatedEntry.date);
       }
     } catch (error) {
-      console.error('Error updating entry:', error); // Log any errors
       setError('Failed to update the entry. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDelete = async (sessionId) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.delete(`https://05irsninm2.execute-api.us-east-1.amazonaws.com/prod/resource/${sessionId}`);
+      if (response.status === 200) {
+        notification.success({
+          message: 'Entry Deleted',
+          description: 'The entry has been successfully deleted.',
+        });
+        // Refresh entries list
+        const newDate = location.state?.date;
+        if (newDate) {
+          fetchDiaryEntries(newDate);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      let errorMessage = 'Failed to delete the entry. Please try again later.';
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error(error.response.data);
+        console.error(error.response.status);
+        console.error(error.response.headers);
+        errorMessage = error.response.data.message || errorMessage;
+      }
+      notification.error({
+        message: 'Failed to Delete Entry',
+        description: 'Failed to delete the entry. Please try again later.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Show modal to add new entry
+  const showAddEntryModal = () => {
+    setIsAddEntryModalVisible(true);
+  };
+
+  // Submit new entry
+  const handleAddEntryModalOk = () => {
+    form.validateFields().then(values => {
+      addDiaryEntry({
+        ...values,
+        date: location.state?.date
+      });
+      setIsAddEntryModalVisible(false);
+    }).catch(info => {
+      console.error('Validate Failed:', info);
+    });
+  };
+
+  // Add entry to API
+const addDiaryEntry = async (newEntry) => {
+  setIsLoading(true);
+  try {
+    const response = await axios.post(
+      'https://j2vdwf8iqi.execute-api.us-east-1.amazonaws.com/prod/resource', 
+      JSON.stringify(newEntry),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    if (response.status === 201) {
+      fetchDiaryEntries(newEntry.date);
+    }
+  } catch (error) {
+    notification.error({
+      message: 'Failed to Add Entry',
+      description: 'Failed to add the entry. Please try again later.',
+      duration: 4.5, // duration of notification in seconds
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // Render each entry card
   const renderEntries = () => {
     if (entries.length === 0) {
-      return <Paragraph>No entries available for this date.</Paragraph>;
+      return <Paragraph>No entries available for this date. You can add entries for this date by pressing <b>Add Entry</b> button</Paragraph>;
     }
   
     return entries.map((entry, index) => (
@@ -96,13 +167,22 @@ const CalendarDetails = () => {
         <Paragraph><strong>Mood:</strong> {entry.mood}</Paragraph>
         <Paragraph>{entry.content}</Paragraph>
         <Button type="primary" onClick={() => handleEdit(entry)}>Edit</Button>
+        <Button danger style={{ marginLeft: '8px' }} onClick={() => handleDelete(entry.sessionId)}>
+          Delete
+        </Button>
       </Card>
     ));
   };
 
+  // Main component render
   return (
     <div className="container">
-      <Title level={2}>Diary Entries for {location.state?.date}</Title>
+      <Title level={2}>
+        Diary Entries for {location.state?.date}
+        <Button type="primary" onClick={showAddEntryModal} style={{ marginLeft: 16 }}>
+          Add Entry
+        </Button>
+      </Title>
       {isLoading ? (
         <Spin tip="Loading diary entries..." />
       ) : error ? (
@@ -112,37 +192,44 @@ const CalendarDetails = () => {
       )}
       <Modal
         title="Edit Diary Entry"
-        visible={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={() => setIsModalVisible(false)}
+        visible={isEditModalVisible}
+        onOk={handleEditModalOk}
+        onCancel={() => setIsEditModalVisible(false)}
       >
         <Form form={form} layout="vertical">
-          <Form.Item
-            name="title"
-            label="Title"
-            rules={[{ required: true, message: 'Please input the title!' }]}
-          >
+          <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please input the title!' }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="content"
-            label="Content"
-            rules={[{ required: true, message: 'Please input the content!' }]}
-          >
+          <Form.Item name="content" label="Content" rules={[{ required: true, message: 'Please input the content!' }]}>
             <Input.TextArea rows={4} />
           </Form.Item>
-          <Form.Item
-            name="mood"
-            label="Mood"
-            rules={[{ required: true, message: 'Please input the mood!' }]}
-          >
+          <Form.Item name="mood" label="Mood" rules={[{ required: true, message: 'Please input the mood!' }]}>
             <Input />
           </Form.Item>
-          {/* Date Form.Item has been removed to prevent editing */}
         </Form>
       </Modal>
-    </div>
-  );
+      <Modal
+        title="Add New Diary Entry"
+        visible={isAddEntryModalVisible}
+        onOk={handleAddEntryModalOk}
+        onCancel={() => setIsAddEntryModalVisible(false)}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please input the title!' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="content" label="Content" rules={[{ required: true, message: 'Please input the content!' }]}>
+
+        <Input.TextArea rows={4} />
+      </Form.Item>
+      <Form.Item name="mood" label="Mood" rules={[{ required: true, message: 'Please input the mood!' }]}>
+        <Input />
+      </Form.Item>
+      {/* We're not adding a date field here since we're using the date from location.state */}
+    </Form>
+  </Modal>
+</div>
+);
 };
 
 export default CalendarDetails;

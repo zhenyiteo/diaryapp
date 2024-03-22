@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from './index.module.css';
-import { useTheme } from '../../ThemeContext.jsx';
 
 function Info() {
   
