@@ -1,129 +1,104 @@
-
+import React, { useState, useEffect, useRef } from 'react';
 import { LexRuntimeV2 } from '@aws-sdk/client-lex-runtime-v2';
 import { v4 as uuidv4 } from 'uuid';
-import React, { useState, useEffect } from 'react';
-import './Chatbot.css'; // Import your CSS file for styling
-import { useRef } from 'react'; // Import useRef from 'react'
+import './Chatbot.css'; // Make sure to style your chatbot accordingly
 
-
-  
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState('');
-  const [inputMessage, setInputMessage] = useState('');
-  const messagesEndRef = useRef(null); 
-  
-  
-  // Initialize AWS SDK with your region and credentials
-  const config = {
-    region: 'us-east-1',
-    credentials: {
-      accessKeyId: 'Aa',
-      secretAccessKey: 'nas'
-    }
-  };
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    setSessionId(uuidv4());
+    setSessionId(uuidv4()); // Generate a new session ID on component mount
   }, []);
-  
-  const lexRuntimeV2 = new LexRuntimeV2(config);
 
-  
-  // Function to update state with received messages
+  // Lex V2 Client configuration
+  // IMPORTANT: Do not hardcode credentials in production. Use environment variables or AWS IAM roles.
+  const lexRuntimeV2 = new LexRuntimeV2({
+    region: 'us-east-1',
+    credentials: {
+      accessKeyId: 'a',
+      secretAccessKey: 'na'
+    }
+  });
+
   const receiveMessage = (data) => {
     if (data && data.messages) {
       const botMessages = data.messages.map(message => ({ text: message.content, sender: 'bot' }));
       setMessages(prevMessages => [...prevMessages, ...botMessages]);
+
+      // Check if any of the bot's messages indicate the session has ended
+      const sessionEnded = botMessages.some(message => message.text.includes('Session ended.'));
+      if (sessionEnded) {
+        setTimeout(() => window.location.reload(), 15000); // Reload the page after 2 seconds
+      }
     } else {
       console.error('Invalid response from Lex:', data);
-      // Handle the case where the response from Lex is invalid or missing data
-      receiveMessage({ messages: [{ content: 'Sorry, I encountered an error. Please try again later.' }] });
+      setMessages(prevMessages => [...prevMessages, { text: 'Sorry, I encountered an error. Please try again later.', sender: 'bot' }]);
     }
   };
 
-  // Function to handle sending a message to AWS Lex V2
   const sendMessageToLexV2 = async (message) => {
-    try {
-      const params = {
-        botAliasId: 'TSTALIASID',
+    const params = {
+      botAliasId: 'TSTALIASID',
         botId: 'I7QYQOUFYC',
         localeId: 'en_GB',
         sessionId: sessionId,
         text: message
-      };
+    };
 
-      console.log('Sending message to Lex V2:', params); // Log the message being sent to Lex
-
+    try {
       const data = await lexRuntimeV2.recognizeText(params);
-      console.log('Received data from Lex V2:', data); // Log the data received from Lex
-  
-      if (data) {
-        receiveMessage(data);
-      } else {
-        console.error('Invalid response from Lex:', data);
-        receiveMessage({ messages: [{ content: 'Sorry, I encountered an error. Please try again later.' }] });
-      }
+      receiveMessage(data);
     } catch (error) {
       console.error('Error sending message to Lex V2:', error);
-      receiveMessage({ messages: [{ content: 'Sorry, I encountered an error. Please try again later.' }] });
+      setMessages(prevMessages => [...prevMessages, { text: 'Sorry, I encountered an error. Please try again later.', sender: 'bot' }]);
     }
   };
 
-  
+  // Function to handle user message input and sending it to Lex
+  const handleUserInput = (event) => {
+    const userInput = event.target.value;
+    if (event.key === 'Enter' && userInput.trim()) {
+      setMessages(prevMessages => [...prevMessages, { text: userInput, sender: 'user' }]);
+      sendMessageToLexV2(userInput);
+      event.target.value = ''; // Clear the input field
+    }
+  };
 
-
-
-
-// Function to handle user input
-const handleUserInput = (inputMessage) => {
-  setMessages(prevMessages => [...prevMessages, { text: inputMessage, sender: 'user' }]);
-  sendMessageToLexV2(inputMessage);
-};
-
-return (
-  <div className="chatbot-container">
-    <div className="chatbot-messages">
-      {messages.length === 0 ? (
-        // Display a welcome message if there are no messages yet
-        <div className="welcome-message" style={{ fontFamily: "'Roboto', sans-serif", fontSize: "18px", color: "#333", textAlign: "center", margin: "20px 0" }}>
-  Hello, I am diaryapp Chatbot. Here are some questions to get you started:
-  I want to write diary.
-</div>
-      ) : (
-        // Once messages exist, display them instead of the welcome message
-        messages.map((message, index) => (
-          <div key={index} className={`message ${message.sender}`}>
-            {message.sender === 'user' ? (
-              <div className="user-message">
-                <strong>You:</strong> {message.text}
-              </div>
-            ) : (
-              <div className="bot-message">
-                <strong>Bot:</strong> {message.text}
-              </div>
-            )}
+  return (
+    <div className="chatbot-container">
+      <div className="chatbot-messages">
+        {messages.length === 0 ? (
+          <div className="welcome-message">
+            Hello, I am diaryapp Chatbot. Here are some commands to get you started:
+            "I want to write a diary."
           </div>
-        ))
-      )}
-      <div ref={messagesEndRef} />
+        ) : (
+          messages.map((message, index) => (
+            <div key={index} className={`message ${message.sender}`}>
+              {message.sender === 'user' ? (
+                <div className="user-message">
+                  <strong>You:</strong> {message.text}
+                </div>
+              ) : (
+                <div className="bot-message">
+                  <strong>Bot:</strong> {message.text}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+      <input
+        type="text"
+        className="input-message"
+        placeholder="Type your message here..."
+        onKeyPress={handleUserInput}
+      />
     </div>
-
-
-    <input
-      type="text"
-      className="input-message"
-      placeholder="Type your message here..."
-      onKeyPress={(event) => {
-        if (event.key === 'Enter') {
-          handleUserInput(event.target.value);
-          event.target.value = '';
-        }
-      }}
-    />
-  </div>
-);
+  );
 };
-
 
 export default Chatbot;

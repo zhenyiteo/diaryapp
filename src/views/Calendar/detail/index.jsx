@@ -81,7 +81,7 @@ const CalendarDetails = () => {
   const handleDelete = async (sessionId) => {
     setIsLoading(true);
     try {
-      const response = await axios.delete(`https://05irsninm2.execute-api.us-east-1.amazonaws.com/prod/resource/${sessionId}`);
+      const response = await axios.delete(`https://05irsninm2.execute-api.us-east-1.amazonaws.com/prod/handdlepython/${sessionId}`);
       if (response.status === 200) {
         notification.success({
           message: 'Entry Deleted',
@@ -136,11 +136,17 @@ const addDiaryEntry = async (newEntry) => {
   setIsLoading(true);
   try {
     const response = await axios.post(
-      'https://j2vdwf8iqi.execute-api.us-east-1.amazonaws.com/prod/resource', 
+      'https://5ed0iy3pue.execute-api.us-east-1.amazonaws.com/prod/resource', 
       JSON.stringify(newEntry),
       { headers: { 'Content-Type': 'application/json' } }
     );
     if (response.status === 201) {
+
+      notification.success({
+        message: 'Entry Succesfully Saved',
+        description: 'The entry has been successfully saved.',
+      });
+
       fetchDiaryEntries(newEntry.date);
     }
   } catch (error) {

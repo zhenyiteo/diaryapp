@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
-import { Table, Button, Input, message, Modal } from 'antd'; // Import Modal directly from 'antd'
+import { Table, Button, Input, message, Modal } from 'antd'; 
 import './Sentiment.css';
 import * as XLSX from 'xlsx';
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid } from 'recharts';
+import { notification } from 'antd';
 
 
 const COLORS = ['#F78888', '#8CCB9B', '#90AFC5', '#C789F2'];
@@ -34,9 +35,24 @@ const SentimentAnalysis = () => {
       const { JobId } = response.data;
       setJobId(JobId);
       setError(null); // Clear any previous errors
+
+      notification.success({
+        message: 'Sentiment Analysis Started',
+        description: `Your sentiment analysis has started successfully. Your Job ID is ${JobId}.`,
+        duration: 5, // Duration the notification stays open, in seconds
+      });
+
+
     } catch (error) {
       console.error('Error starting sentiment analysis:', error);
       setError('Error starting sentiment analysis. Please try again.'); // Set error message
+
+      notification.error({
+        message: 'Error Starting Sentiment Analysis',
+        description: 'There was an error starting sentiment analysis. Please try again later.',
+        duration: 5,
+      });
+      
     }
     setIsConfirmationModalVisible(false); // Close confirmation modal after starting analysis
   };
