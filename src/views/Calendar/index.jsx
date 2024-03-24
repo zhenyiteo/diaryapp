@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import styles from './index.module.css'; 
 import dayjs from 'dayjs';
 import { Alert } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 function useSingleAndDoubleClick(actionSimpleClick, actionDoubleClick, delay = 250) {
   let clickTimer = null;
@@ -22,6 +22,47 @@ function useSingleAndDoubleClick(actionSimpleClick, actionDoubleClick, delay = 2
     }
   };
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+`;
+
+const StyledAlert = styled(Alert)`
+  margin-bottom: 20px;
+  border-radius: 5px;
+  .ant-alert-icon {
+    display: none; /* Hide the icon */
+  }
+`;
+
+const CalendarContainer = styled.div`
+  max-width: 1200px; /* Increased width */
+  
+  width: 100%; /* Ensures it's responsive */
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  .react-calendar {
+    border-radius: 20px;
+    width: 150%; /* Adjusted to fit container width */
+    border: none;
+    /* Increase the overall font size to make the calendar appear larger */
+    font-size: 1.7em; 
+  }
+  .react-calendar__tile:enabled:hover,
+  .react-calendar__tile:enabled:focus {
+    background: #f0f2f5;
+    color: #1890ff;
+    border-radius: 5px;
+  }
+  .react-calendar__tile--active {
+    background: #1890ff;
+    color: white;
+    border-radius: 5px;
+  }
+`;
 
 const Cal = () => {
   const currentDate = dayjs();
@@ -41,18 +82,17 @@ const Cal = () => {
   const handleDateClick = useSingleAndDoubleClick(handleSingleClick, handleDoubleClick);
 
   return (
-    <div style={{ height: 'auto', display: 'flex', flexDirection: 'column', padding: '20px' }}>
+    <Container>
       <h2>Choose a Date</h2>
-      <Alert message={alertMessage} />
-      <div style={{ flex: 1, overflow: 'auto', width: '600px', margin: 'auto' }}>
+      <StyledAlert message={alertMessage} type="info" />
+      <CalendarContainer>
         <Calendar
           value={value}
           onClickDay={handleDateClick}
           calendarType="US"
-          className={styles.customCalendar} 
         />
-      </div>
-    </div>
+      </CalendarContainer>
+    </Container>
   );
 };
 
