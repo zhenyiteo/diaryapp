@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Homepage from './views/Homepage';
 import Calendar from './views/Calendar';
 import Info from './views/Info';
@@ -10,6 +11,7 @@ import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined, BarCh
 import './App.css';
 import { Layout, Menu, Tooltip } from 'antd';
 import { ThemeProvider } from './ThemeContext.jsx';
+import helmetIco from './helmetico.ico';
 
 
 const { Header, Sider, Content } = Layout;
@@ -21,6 +23,10 @@ const App = () => {
   return (
     <ThemeProvider>
       <Router>
+        <Helmet>
+          <title>Diaryapp</title>
+          <link rel="icon" type="image/x-icon" href={helmetIco} />
+        </Helmet>
         <Layout style={{ minHeight: '100vh' }}>
           <Header style={{ textAlign: 'center', padding: '10px 0', background: 'rgba(255, 255, 255, 0.5)' }}>
             {/* Logo */}
