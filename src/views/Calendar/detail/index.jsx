@@ -167,25 +167,35 @@ const addDiaryEntry = async (newEntry) => {
     }
   
     return entries.map((entry, index) => (
-      <Card key={index} className="entryCard">
+      <Card 
+        key={index} 
+        style={{ marginBottom: '20px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+      >
         <Title level={4}>{entry.title}</Title>
         <Paragraph><strong>Date:</strong> {entry.date}</Paragraph>
         <Paragraph><strong>Mood:</strong> {entry.mood}</Paragraph>
         <Paragraph>{entry.content}</Paragraph>
-        <Button type="primary" onClick={() => handleEdit(entry)}>Edit</Button>
-        <Button danger style={{ marginLeft: '8px' }} onClick={() => handleDelete(entry.sessionId)}>
+        <Button type="primary" onClick={() => handleEdit(entry)} style={{ borderRadius: '5px' }}>Edit</Button>
+        <Button 
+          danger 
+          style={{ marginLeft: '8px', borderRadius: '5px' }} 
+          onClick={() => handleDelete(entry.sessionId)}
+        >
           Delete
         </Button>
       </Card>
     ));
   };
 
-  // Main component render
   return (
-    <div className="container">
-      <Title level={2}>
+    <div style={{ padding: '20px' }}>
+      <Title level={2} style={{ marginBottom: '20px' }}>
         Diary Entries for {location.state?.date}
-        <Button type="primary" onClick={showAddEntryModal} style={{ marginLeft: 16 }}>
+        <Button 
+          type="primary" 
+          onClick={showAddEntryModal} 
+          style={{ marginLeft: '16px', borderRadius: '5px' }}
+        >
           Add Entry
         </Button>
       </Title>

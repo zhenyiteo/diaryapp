@@ -17,8 +17,8 @@ const Chatbot = () => {
   const lexRuntimeV2 = new LexRuntimeV2({
     region: 'us-east-1',
     credentials: {
-      accessKeyId: 'a',
-      secretAccessKey: 'na'
+      accessKeyId: 'Aa',
+      secretAccessKey: 'naa'
     }
   });
 
