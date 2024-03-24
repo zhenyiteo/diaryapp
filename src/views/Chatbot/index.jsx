@@ -24,10 +24,18 @@ const Chatbot = () => {
         sender: 'bot'
       }));
       setMessages(prevMessages => [...prevMessages, ...botMessages]);
+
+      const sessionEnded = botMessages.some(message => message.text.includes('Session ended.'));
+      if (sessionEnded) {
+        setTimeout(() => window.location.reload(), 15000); 
+      }
+
     } else {
       console.error('Invalid response:', response);
       setMessages(prevMessages => [...prevMessages, { text: 'Sorry, I encountered an error. Please try again later.', sender: 'bot' }]);
     }
+
+    
   };
 
   const sendMessageToBackend = async (message) => {
@@ -41,6 +49,8 @@ const Chatbot = () => {
       console.error('Error sending message:', error);
       setMessages(prevMessages => [...prevMessages, { text: 'Sorry, I encountered an error. Please try again later.', sender: 'bot' }]);
     }
+
+    
   };
 
   
