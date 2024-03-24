@@ -154,7 +154,7 @@ const Homepage = () => {
 
   return (
     <div style={{ margin: '0 auto', maxWidth: 1000 }}>
-      <h2 style={{ textAlign: 'center' }}>Diary Timeline</h2>
+      <h2>Diary Timeline</h2>
       <TimelineWrapper>
         <ContentWrapper>
           <Timeline mode="left">

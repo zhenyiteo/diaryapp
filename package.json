@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^5.3.5",
     "@aws-sdk/client-lex-runtime-v2": "^3.521.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
@@ -19,6 +20,7 @@
     "react": "^18.2.0",
     "react-calendar": "^4.8.0",
     "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
     "react-router-dom": "^6.21.3",
     "react-scripts": "5.0.1",
     "recharts": "^2.12.2",
@@ -54,6 +56,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-helmet": "^6.1.11",
     "eslint-plugin-react": "^7.33.2"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
