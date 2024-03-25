@@ -8,17 +8,19 @@ function Info() {
     <div className={styles.infoContainer}>
       <h2>Info and FAQ</h2>
 
-      <section>
-        <h3>System & Architecture Diagram</h3>
-        <p>Understand the underlying technology that powers Diaryapp with our system and architecture diagram. </p>
-        <p>Take a look at our architecture diagram below:</p>
-        <img src={SystemArchitectureDiagram} alt="System Architecture Diagram" className={styles.architectureDiagram} />
-      </section>
+      
       
       <section>
         <h3>About This Site</h3>
         <p>Welcome to Diaryapp, your personal space to capture and explore your thoughts and memories.</p>
         <p>To get started, create a new diary entry, browse through your past entries on the Timeline, or interact with our Chatbot to start your entries. </p>
+      </section>
+
+      <section>
+        <h3>System & Architecture Diagram</h3>
+        <p>Understand the underlying technology that powers Diaryapp with our system and architecture diagram. </p>
+      
+        <img src={SystemArchitectureDiagram} alt="System Architecture Diagram" className={styles.architectureDiagram} />
       </section>
 
       <section>
@@ -68,7 +70,7 @@ function Info() {
         <p>Explore the Sentiment Analysis feature to turn your entries into a roadmap for personal growth.</p>
       </section>
 
-      {/* Add more sections for other features as needed */}
+      
       
     </div>
   );

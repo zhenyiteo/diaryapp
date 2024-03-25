@@ -1,3 +1,13 @@
+.infoContainer {
+  font-family: Arial, sans-serif; 
+}
+
+
+h2, h3, p, li {
+  letter-spacing: 0.5px; 
+}
+
+
 .home {
     display: flex;
     flex-direction: column;
@@ -67,7 +77,7 @@
     font-size: 12px;
   }
 
-  /* index.module.css */
+ 
 .settingContainer {
   padding: 20px;
 }

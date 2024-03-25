@@ -34,21 +34,20 @@ const StyledAlert = styled(Alert)`
   margin-bottom: 20px;
   border-radius: 5px;
   .ant-alert-icon {
-    display: none; /* Hide the icon */
+    display: none;
   }
 `;
 
 const CalendarContainer = styled.div`
-  max-width: 1200px; /* Increased width */
+  max-width: 1200px; 
   
-  width: 100%; /* Ensures it's responsive */
+  width: 100%; 
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
   .react-calendar {
     border-radius: 20px;
-    width: 150%; /* Adjusted to fit container width */
+    width: 150%;
     border: none;
-    /* Increase the overall font size to make the calendar appear larger */
     font-size: 1.7em; 
   }
   .react-calendar__tile:enabled:hover,

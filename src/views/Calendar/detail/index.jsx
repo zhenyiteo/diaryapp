@@ -16,7 +16,7 @@ const CalendarDetails = () => {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [form] = Form.useForm();
   
-  // Fetch diary entries when date changes
+  
   useEffect(() => {
     const date = location.state?.date;
     if (date) {
@@ -97,8 +97,7 @@ const CalendarDetails = () => {
       console.error(error);
       let errorMessage = 'Failed to delete the entry. Please try again later.';
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
+        
         console.error(error.response.data);
         console.error(error.response.status);
         console.error(error.response.headers);
@@ -113,12 +112,12 @@ const CalendarDetails = () => {
     }
   };
 
-  // Show modal to add new entry
+  
   const showAddEntryModal = () => {
     setIsAddEntryModalVisible(true);
   };
 
-  // Submit new entry
+  
   const handleAddEntryModalOk = () => {
     form.validateFields().then(values => {
       addDiaryEntry({
@@ -131,7 +130,7 @@ const CalendarDetails = () => {
     });
   };
 
-  // Add entry to API
+  
 const addDiaryEntry = async (newEntry) => {
   setIsLoading(true);
   try {
@@ -153,14 +152,14 @@ const addDiaryEntry = async (newEntry) => {
     notification.error({
       message: 'Failed to Add Entry',
       description: 'Failed to add the entry. Please try again later.',
-      duration: 4.5, // duration of notification in seconds
+      duration: 4.5, 
     });
   } finally {
     setIsLoading(false);
   }
 };
 
-  // Render each entry card
+ 
   const renderEntries = () => {
     if (entries.length === 0) {
       return <Paragraph>No entries available for this date. You can add entries for this date by pressing <b>Add Entry</b> button</Paragraph>;
@@ -180,7 +179,7 @@ const addDiaryEntry = async (newEntry) => {
     ));
   };
 
-  // Main component render
+  
   return (
     <div className="container">
       <Title level={2}>

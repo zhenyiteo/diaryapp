@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LexRuntimeV2 } from '@aws-sdk/client-lex-runtime-v2';
-import { v4 as uuidv4 } from 'uuid';
-import './Chatbot.css'; // Make sure to style your chatbot accordingly
+import './Chatbot.css'; 
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -10,8 +9,18 @@ const Chatbot = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    setSessionId(uuidv4()); // Generate a new session ID on component mount
+    setSessionId(uuidv4());
   }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const receiveMessage = (response) => {
     // Parse the JSON response body from the backend
@@ -44,7 +53,7 @@ const Chatbot = () => {
         message: message,
         sessionId: sessionId,
       });
-      receiveMessage(data); // Pass the Axios response data to the receiveMessage function
+      receiveMessage(data); 
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prevMessages => [...prevMessages, { text: 'Sorry, I encountered an error. Please try again later.', sender: 'bot' }]);
@@ -60,6 +69,7 @@ const Chatbot = () => {
       setMessages(prevMessages => [...prevMessages, { text: userInput, sender: 'user' }]);
       sendMessageToBackend(userInput);
       event.target.value = ''; 
+      setTimeout(scrollToBottom, 100);
     }
   };
 

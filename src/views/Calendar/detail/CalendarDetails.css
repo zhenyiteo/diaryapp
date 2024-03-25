@@ -16,7 +16,7 @@
   }
 
 .entry {
-    background-color: #ffffff; /* White background for each entry */
+    background-color: #ffffff; 
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
@@ -24,12 +24,12 @@
 }
 
 .entryTitle {
-    color: #22223B; /* Darker shade for titles */
+    color: #22223B; 
     margin-bottom: 10px;
 }
 
 .entryDate, .entryMood, .entryContent {
-    color: #4A4E69; /* Consistent color for text */
+    color: #4A4E69; 
     line-height: 1.6;
 }
 
