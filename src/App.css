@@ -2,10 +2,13 @@
   overflow: hidden;
 }
 
-
 .site-content {
   padding: 24px;
   overflow-y: auto;
-  height: calc(100vh - 64px); /* Adjust the height as necessary */
+  height: calc(100vh - 64px); 
 }
 
+
+body {
+  overflow: hidden;
+}

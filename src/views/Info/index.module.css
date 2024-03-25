@@ -13,6 +13,7 @@ h2, h3, p, li {
     flex-direction: column;
     width: 100%;
     padding: 20px;
+    
   }
   .cates {
     margin-top: 20px;
@@ -85,3 +86,4 @@ h2, h3, p, li {
 .pinkBackground {
   background-color: pink;
 }
+
