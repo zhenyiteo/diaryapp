@@ -40,24 +40,27 @@ const AddButton = styled(Button)`
 const TimelineWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh; 
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-  overflow-y: auto;
+  overflow-y: auto; 
   flex: 1;
   padding: 20px;
   gap: 20px;
+  margin-top: -20px; 
+  
+  
 `;
 
 const StyledCard = styled(Card)`
-  width: 400px;
-  height: 300px;
+  width: ${(props) => props.width || '550px'}; // Default width is 400px, can be overridden
+  height: 300px; // Adjust height automatically to fit content
   transition: transform 0.2s, box-shadow 0.2s;
-  font-family: 'Arial', sans-serif; 
+  font-family: 'Arial', sans-serif;
 
   &:hover {
     transform: translateY(-5px);
@@ -93,12 +96,14 @@ const DateText = styled.div`
 `;
 
 const ContentText = styled.div`
-font-family: 'Arial', sans-serif; 
+  font-family: 'Arial', sans-serif; 
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal; 
   letter-spacing: 0.5px;
-  
 `;
 
 const getMonthAbbreviation = (month) => {
@@ -161,7 +166,7 @@ const Homepage = () => {
   };
 
   return (
-    <div style={{ margin: '0 auto', maxWidth: 1000 }}>
+    <div style={{ }}>
       <h2>Diary Timeline</h2>
       <TimelineWrapper>
         <ContentWrapper>
@@ -206,7 +211,7 @@ const Homepage = () => {
         onCancel={handleModalClose}
         footer={null}
         closable={true}
-        bodyStyle={{ backgroundColor: '#f0f2f5' }}
+        bodyStyle={{ backgroundColor: '#ffffff' }}
       >
         <p>Date: {selectedEntry?.date}</p>
         <p>Mood: {selectedEntry?.mood}</p>

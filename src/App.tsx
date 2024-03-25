@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Homepage from './views/Homepage';
 import Calendar from './views/Calendar';
@@ -7,17 +7,39 @@ import Info from './views/Info';
 import CalendarDetails from './views/Calendar/detail';
 import Chatbot from './views/Chatbot';
 import SentimentAnalysis from './views/SentimentAnalysis';
-import { MessageOutlined, HomeOutlined, CalendarOutlined, SettingOutlined, BarChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { MessageOutlined, HomeOutlined, CalendarOutlined, BarChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import './App.css';
 import { Layout, Menu, Tooltip } from 'antd';
 import { ThemeProvider } from './ThemeContext.jsx';
 import helmetIco from './helmetico.ico';
 
-
 const { Header, Sider, Content } = Layout;
 
+
+const AppRoutes = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const content = document.querySelector('.site-content');
+    if (content) {
+      content.scrollTop = 0;
+    }
+  }, [location]); 
+
+  return (
+    <Routes>
+      <Route path="/home" element={<Homepage />} />
+      <Route path="/calendar" element={<Calendar />} />
+      <Route path="/info" element={<Info />} />
+      <Route path="/calendar/details" element={<CalendarDetails />} />
+      <Route path="/chatbot" element={<Chatbot />} />
+      <Route path="/sentiment-analysis" element={<SentimentAnalysis />} />
+    </Routes>
+  );
+};
+
+// Main App component
 const App = () => {
-  // State to control the collapsed status of the Sider
   const [collapsed, setCollapsed] = useState(true);
 
   return (
@@ -38,7 +60,6 @@ const App = () => {
               />
             </Link>
           </Header>
-
           <Layout>
             <Sider width={200} theme="light" collapsible collapsed={collapsed} onCollapse={setCollapsed}
                    onMouseEnter={() => setCollapsed(false)} onMouseLeave={() => setCollapsed(true)}>
@@ -65,24 +86,15 @@ const App = () => {
                   </Tooltip>
                 </Menu.Item>
                 <Menu.Item key="5" icon={<InfoCircleOutlined />}>
-                <Tooltip placement="right" title={collapsed ? "Info" : ""}>
-                  <Link to="/info">Info</Link>
-                </Tooltip>
-              </Menu.Item>
+                  <Tooltip placement="right" title={collapsed ? "Info" : ""}>
+                    <Link to="/info">Info</Link>
+                  </Tooltip>
+                </Menu.Item>
               </Menu>
             </Sider>
-
             <Layout>
               <Content className="site-content">
-                <Routes>
-                  <Route path="/home" element={<Homepage />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/info" element={<Info />} />
-                  <Route path="/calendar/details" element={<CalendarDetails />} />
-                  <Route path="/chatbot" element={<Chatbot />} />
-                  
-                  <Route path="/sentiment-analysis" element={<SentimentAnalysis />} />
-                </Routes>
+                <AppRoutes /> 
               </Content>
             </Layout>
           </Layout>
