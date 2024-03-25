@@ -1,12 +1,12 @@
 .sticky-header {
   position: sticky;
-  top: 0; /* Adjust if you have a top navbar and need to give some space */
-  background: white; /* Use the background color of your app */
-  z-index: 10; /* To ensure it stays above other content */
-  padding: 10px 0; /* Optional padding */
+  top: 0; 
+  background: white; 
+  z-index: 10;
+  padding: 10px 0;
 }
 
-/* Ensure the content flows under the sticky header correctly */
+
 .content-section {
-  padding-top: 10px; /* Must be equal or more than the height of the sticky header */
+  padding-top: 10px; 
 }

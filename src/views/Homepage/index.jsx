@@ -16,10 +16,10 @@ const AddButton = styled(Button)`
   color: #ffffff; 
 
   &:hover {
-    transform: scale(1.5); // Enlarge the button on hover
+    transform: scale(1.5); 
     
     .add-diary-text {
-      display: block; // Show the text when hovering
+      display: block; 
     }
   }
 
@@ -57,6 +57,8 @@ const StyledCard = styled(Card)`
   width: 400px;
   height: 300px;
   transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'Arial', sans-serif; 
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -72,6 +74,8 @@ const TitleWrapper = styled.div`
 const Title = styled.div`
   font-size: 20px;
   font-weight: bold;
+  font-family: 'Arial', sans-serif; 
+  letter-spacing: 1px;
 `;
 
 const DateWrapper = styled.div`
@@ -84,13 +88,17 @@ const DateWrapper = styled.div`
 
 const DateText = styled.div`
   font-size: 15px;
+  font-family: 'Arial', sans-serif; 
+  letter-spacing: 0.5px;
 `;
 
 const ContentText = styled.div`
-  font-family: 'Handlee', cursive;
+font-family: 'Arial', sans-serif; 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.5px;
+  
 `;
 
 const getMonthAbbreviation = (month) => {

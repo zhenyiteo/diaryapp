@@ -2,7 +2,7 @@
   overflow: hidden;
 }
 
-/* Make content area scrollable */
+
 .site-content {
   padding: 24px;
   overflow-y: auto;

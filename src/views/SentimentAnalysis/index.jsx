@@ -23,10 +23,10 @@ const SentimentAnalysis = () => {
   const [jobId, setJobId] = useState('');
   const [userInputJobId, setUserInputJobId] = useState('');
   const [error, setError] = useState('');
-  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false); // State to manage visibility of confirmation modal
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false); 
 
   const handleSentimentAnalysis = async () => {
-    setIsConfirmationModalVisible(true); // Display confirmation modal
+    setIsConfirmationModalVisible(true); 
   };
 
   const startSentimentAnalysis = async () => {
@@ -34,12 +34,12 @@ const SentimentAnalysis = () => {
       const response = await axios.post('https://pnlwmxtxkl.execute-api.us-east-1.amazonaws.com/prod/resource');
       const { JobId } = response.data;
       setJobId(JobId);
-      setError(null); // Clear any previous errors
+      setError(null); 
 
       notification.success({
         message: 'Sentiment Analysis Started',
-        description: `Your sentiment analysis has started successfully. Your Job ID is ${JobId}.`,
-        duration: 5, // Duration the notification stays open, in seconds
+        description: `Your sentiment analysis has started successfully. Please wait for 10 minutes before pasting to it process result.Your Job ID is ${JobId}.`,
+        duration: 10, 
       });
 
 
@@ -54,7 +54,7 @@ const SentimentAnalysis = () => {
       });
       
     }
-    setIsConfirmationModalVisible(false); // Close confirmation modal after starting analysis
+    setIsConfirmationModalVisible(false); 
   };
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const SentimentAnalysis = () => {
           'Content-Type': 'application/json'
         }
       });
-      console.log('Response data:', response.data); // Log the response data
+      console.log('Response data:', response.data); 
       message.success('Results processed successfully');
       window.location.reload();
     } catch (error) {
@@ -196,10 +196,10 @@ const SentimentAnalysis = () => {
     return new Date(dateStr).getTime();
   };
 
-  // Prepare data for the scatter plot
+  
   const scatterData = moodEntries.map((entry) => ({
     ...entry,
-    date: new Date(entry.date).toLocaleDateString(), // Convert date to a string in the desired format
+    date: new Date(entry.date).toLocaleDateString(), 
     moodValue: moodToNumeric[entry.mood.toLowerCase()],
     moodColor: moodColorMapping[entry.mood.toLowerCase()]
   }));
@@ -246,7 +246,7 @@ const SentimentAnalysis = () => {
       </div>
       {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
-      {/* Confirmation Modal */}
+      
       <Modal
         title="Start Sentiment Analysis?"
         visible={isConfirmationModalVisible}
@@ -255,7 +255,7 @@ const SentimentAnalysis = () => {
         okText="Yes"
         cancelText="No"
       >
-        Do you wish to initiate sentiment analysis ? This action will generate a job ID. Please wait for 10 minutes before sending the job ID to Process Results.
+        Do you wish to initiate sentiment analysis ? This action will generate a job ID.
       </Modal>
 
 
@@ -275,14 +275,14 @@ const SentimentAnalysis = () => {
   type="number"
   dataKey="moodValue"
   name="Mood"
-  domain={['auto', 'auto']} // Let recharts determine the domain automatically
+  domain={['auto', 'auto']} 
   tickFormatter={(value) => {
     switch (value) {
       case 0: return 'Negative';
       case 1: return 'Mixed';
       case 2: return 'Neutral';
       case 3: return 'Positive';
-      default: return ''; // Handle undefined or unexpected values
+      default: return ''; 
     }
   }}
 />
@@ -310,8 +310,8 @@ const SentimentAnalysis = () => {
             outerRadius={80}
             dataKey="value"
             nameKey="name"
-            animationBegin={0} // Start animation from the beginning
-            animationDuration={400} // Animation duration in milliseconds
+            animationBegin={0} 
+            animationDuration={400}
           >
             {moodCount.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

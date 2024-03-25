@@ -80,7 +80,7 @@ const App = () => {
                   <Route path="/info" element={<Info />} />
                   <Route path="/calendar/details" element={<CalendarDetails />} />
                   <Route path="/chatbot" element={<Chatbot />} />
-                  {/* Add the new route for sentiment analysis view */}
+                  
                   <Route path="/sentiment-analysis" element={<SentimentAnalysis />} />
                 </Routes>
               </Content>
