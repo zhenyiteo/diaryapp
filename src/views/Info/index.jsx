@@ -8,8 +8,6 @@ function Info() {
     <div className={styles.infoContainer}>
       <h2>Info and FAQ</h2>
 
-      
-      
       <section>
         <h3>About This Site</h3>
         <p>Welcome to Diaryapp, your personal space to capture and explore your thoughts and memories.</p>

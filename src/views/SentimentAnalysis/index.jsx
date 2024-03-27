@@ -6,6 +6,8 @@ import './Sentiment.css';
 import * as XLSX from 'xlsx';
 import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid } from 'recharts';
 import { notification } from 'antd';
+import { DatePicker } from 'antd';
+const { RangePicker } = DatePicker;
 
 
 const COLORS = ['#F78888', '#8CCB9B', '#90AFC5', '#C789F2'];
@@ -24,6 +26,7 @@ const SentimentAnalysis = () => {
   const [userInputJobId, setUserInputJobId] = useState('');
   const [error, setError] = useState('');
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false); 
+  const [dateRange, setDateRange] = useState([]);
 
   const handleSentimentAnalysis = async () => {
     setIsConfirmationModalVisible(true); 
@@ -37,7 +40,7 @@ const SentimentAnalysis = () => {
       setError(null); 
 
       notification.success({
-        message: 'Sentiment Analysis Started',
+        message: 'Sentiment Analysis Started',   
         description: `Your sentiment analysis has started successfully. Please wait for 10 minutes before pasting to it process result.Your Job ID is ${JobId}.`,
         duration: 10, 
       });
@@ -197,9 +200,18 @@ const SentimentAnalysis = () => {
   };
 
   
-  const scatterData = moodEntries.map((entry) => ({
+  const filteredScatterData = moodEntries.filter(entry => {
+    if (dateRange.length !== 2) {
+      return true; 
+    }
+    const [start, end] = dateRange;
+    const entryDate = new Date(entry.date);
+    const inclusiveEndDate = new Date(end);
+    inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1); 
+    return entryDate >= start && entryDate < inclusiveEndDate;
+  }).map(entry => ({
     ...entry,
-    date: new Date(entry.date).toLocaleDateString(), 
+    date: new Date(entry.date).toLocaleDateString(),
     moodValue: moodToNumeric[entry.mood.toLowerCase()],
     moodColor: moodColorMapping[entry.mood.toLowerCase()]
   }));
@@ -220,45 +232,83 @@ const SentimentAnalysis = () => {
     return null;
   };
 
+  useEffect(() => {
+    if (dateRange.length === 2) {
+      const [start, end] = dateRange;
+      const inclusiveEndDate = new Date(end);
+      inclusiveEndDate.setDate(inclusiveEndDate.getDate() + 1);
+  
+      const filteredEntries = moodEntries.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= start && entryDate < inclusiveEndDate; 
+      });
+  
+      const moodCountMapping = filteredEntries.reduce((acc, entry) => {
+        acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+        return acc;
+      }, {});
+  
+      setMoodCount(Object.entries(moodCountMapping).map(([name, value]) => ({name, value})));
+    }
+  }, [dateRange, moodEntries]);
+
   
 
 
   return (
     <div style={{ margin: '0 auto', maxWidth: 1000, padding: '20px' }}>
-      <h1 style={{ textAlign: 'center' }}>Sentiment Analysis - Amazon Comprehend</h1>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <Button type="primary" onClick={handleSentimentAnalysis}>Start Sentiment Analysis</Button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span>Job ID:</span>
-          <Input readOnly value={jobId} style={{ width: 'auto' }} />
-          <Button onClick={copyToClipboard}>Copy</Button>
-        </div>
-        <div>
-          <Input
-            value={userInputJobId}
-            onChange={(e) => setUserInputJobId(e.target.value)}
-            placeholder="Enter Job ID"
-            style={{ width: '250px', marginRight: '10px' }}
-            maxLength={50}
-          />
-          <Button type="primary" onClick={processResults}>Process Results</Button>
-        </div>
+  <h1 style={{ textAlign: 'center', margin: '0 0 20px 0' }}>Sentiment Analysis</h1>
+
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+    
+    <div style={{ padding: '20px', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', borderRadius: '10px', maxWidth: '45%', textAlign: 'center', alignSelf: 'center' }}>
+      <Button type="primary"  onClick={handleSentimentAnalysis}>Start Sentiment Analysis</Button>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Job ID:</span>
+        <Input readOnly value={jobId} style={{ width: '250px' }} />
+        <Button onClick={copyToClipboard}>Copy</Button>
       </div>
-      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+    </div>
 
+    <div style={{ fontSize: '16px', color: '#555', textAlign: 'center', maxWidth: '60%', alignSelf: 'center' }}>
+      Please wait for about 10 minutes after starting the sentiment analysis before attempting to process results.
+    </div>
+
+    <div style={{ padding: '20px', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', borderRadius: '10px', maxWidth: '45%', textAlign: 'center', alignSelf: 'center' }}>
+      <Input
+        value={userInputJobId}
+        onChange={(e) => setUserInputJobId(e.target.value)}
+        placeholder="Enter Job ID"
+        style={{ width: 'calc(100% - 120px)', marginBottom: '10px' }}
+        maxLength={50}
+      />
+      <Button type="primary"  onClick={processResults}>Process Results</Button>
+    </div>
+    
+  </div>
+
+  {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+
+  <Modal
+    title="Are you ready to start the Sentiment Analysis?"
+    visible={isConfirmationModalVisible}
+    onCancel={() => setIsConfirmationModalVisible(false)}
+    onOk={startSentimentAnalysis}
+    okText="Start"
+    cancelText="Cancel"
+  >
+    Initiating sentiment analysis will generate a new job ID. Are you sure you want to proceed?
+  </Modal>
+
+
+
+  
       
-      <Modal
-        title="Start Sentiment Analysis?"
-        visible={isConfirmationModalVisible}
-        onCancel={() => setIsConfirmationModalVisible(false)}
-        onOk={startSentimentAnalysis}
-        okText="Yes"
-        cancelText="No"
-      >
-        Do you wish to initiate sentiment analysis ? This action will generate a job ID.
-      </Modal>
-
-
+  <div style={{ margin: '100px 0', fontSize: '16px', color: '#555' }}>
+  <h2>Sentiment Analysis Result </h2>
+  <span style={{ marginRight: '8px' }}>Select Date Range:</span>
+  <RangePicker onChange={(dates) => setDateRange(dates)} />
+</div>
       
 
 
@@ -266,65 +316,86 @@ const SentimentAnalysis = () => {
 
     
 
-    <div style={{ margin: '50px 0' }}>
-      <h2>Mood by Date </h2>
-      <ScatterChart width={800} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-  <CartesianGrid />
-  <XAxis type="category" dataKey="date" name="Date" />
-  <YAxis
-  type="number"
-  dataKey="moodValue"
-  name="Mood"
-  domain={['auto', 'auto']} 
-  tickFormatter={(value) => {
-    switch (value) {
-      case 0: return 'Negative';
-      case 1: return 'Mixed';
-      case 2: return 'Neutral';
-      case 3: return 'Positive';
-      default: return ''; 
-    }
-  }}
-/>
-  <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
-  <Legend />
-  <Scatter name="Confidence indicates the accuracy level of Mood" data={scatterData} fill="#800080" >
-    {
-      scatterData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.moodColor} />)
-    }
-  </Scatter>
-</ScatterChart>
-    </div>
+      {filteredScatterData.length > 0 ? (
+  <div style={{ margin: '50px 0', textAlign: 'center' }}>
+    <h2>Mood by Date </h2>
+    
+    <ScatterChart width={900} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+      <CartesianGrid />
+      <XAxis type="category" dataKey="date" name="Date" />
+      <YAxis
+        type="number"
+        dataKey="moodValue"
+        name="Mood"
+        domain={['auto', 'auto']}
+        tickFormatter={(value) => {
+          switch (value) {
+            case 0:
+              return 'Negative';
+            case 1:
+              return 'Mixed';
+            case 2:
+              return 'Neutral';
+            case 3:
+              return 'Positive';
+            default:
+              return '';
+          }
+        }}
+      />
+      <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+      <Legend />
+      <Scatter name="mood over time scatter chart" data={filteredScatterData} fill="#800080">
+        {filteredScatterData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={entry.moodColor} />
+        ))}
+      </Scatter>
+    </ScatterChart>
+  </div>
+) : (
+  <div style={{ margin: '50px 0', textAlign: 'center' }}>
+    <h2>Mood by Date </h2>
+    <p>No data available for the selected range </p>
+  </div>
+)}
 
 
 
 
+{moodCount.length > 0 ? (
+  <div style={{ margin: '50px 0', textAlign: 'center' }}>
+    <h2>Mood Distribution</h2>
+    <PieChart width={950} height={450}>
+      <Pie
+        data={moodCount}
+        cx={470}
+        cy={200}
+        outerRadius={120}
+        dataKey="value"
+        nameKey="name"
+        animationBegin={0}
+        animationDuration={400}
+      >
+        {moodCount.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+      <Tooltip />
+      <Legend />
+    </PieChart>
+  </div>
+) : (
+  <div style={{ margin: '50px 0', textAlign: 'center' }}>
+    <h2>Mood Distribution</h2>
+    <p>No data available for the selected range</p>
+  </div>
+)}
 
-      <div style={{ margin: '50px 0' }}>
-        <h2>Mood Distribution</h2>
-        <PieChart width={400} height={400}>
-          <Pie
-            data={moodCount}
-            cx={200}
-            cy={200}
-            outerRadius={80}
-            dataKey="value"
-            nameKey="name"
-            animationBegin={0} 
-            animationDuration={400}
-          >
-            {moodCount.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <Button type="primary" onClick={exportToExcel}>Export to Excel</Button>
-      </div>
+      <div style={{ marginBottom: '20px' , textAlign: 'center'}}>
+      <h2>Full Data</h2>
+  
+  <Button type="primary" onClick={exportToExcel} style={{ marginLeft: '20px' }}>Export to Excel</Button>
+</div>
 
       <Table dataSource={moodEntries} columns={columns} pagination={{ pageSize: 10 }} />
     </div>
